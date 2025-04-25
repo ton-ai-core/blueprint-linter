@@ -1,0 +1,11 @@
+export enum ErrorType {
+    StructureValidation = 'STRUCTURE_VALIDATION',
+    BrokenProject = 'BROKEN_PROJECT',
+    NamingConsistency = 'NAMING_CONSISTENCY'
+}
+
+export interface LinterError {
+    type: ErrorType;
+    file: string; // Path to the file or directory where the error occurred
+    message: string;
+} 
