@@ -1,6 +1,6 @@
 {
   "name": "@ton-ai-core/blueprint-linter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI linter for @ton-ai-core/blueprint projects",
   "main": "dist/index.js",
   "bin": {
