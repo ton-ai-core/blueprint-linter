@@ -11,6 +11,8 @@ import { LinterError, ErrorType } from './types';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
 import { lintDuplicateContractNames } from './rules/duplicateContractNames';
+import { checkWrapperNaming } from './rules/wrapperNamingRule';
+import { checkScriptNaming } from './rules/scriptNamingRule';
 
 const CHARACTERISTIC_FOLDERS = ['contracts', 'wrappers', 'scripts', 'tests'];
 
@@ -146,21 +148,39 @@ async function main() {
                  process.exit(0);
             }
 
-            // 3. Check Naming Consistency AND Duplicate Contract Names for valid projects
+            // 3. Run checks on valid projects
             for (const projectRoot of validProjectRoots) {
                 const relativeProjectRoot = path.relative(scanPath, projectRoot) || '.';
                 try {
-                    const namingErrors = await checkNamingConsistency(projectRoot, namingCheckDirs);
-                    if (namingErrors.length > 0) {
-                         namingErrors.forEach(err => err.file = path.join(relativeProjectRoot, err.file));
-                         allErrors.push(...namingErrors);
+                    // Original Naming Check (Contracts - snake_case)
+                    const contractNamingErrors = await checkNamingConsistency(projectRoot, namingCheckDirs); // Assuming this only checks contracts now based on its implementation
+                    if (contractNamingErrors.length > 0) {
+                         contractNamingErrors.forEach(err => err.file = path.join(relativeProjectRoot, err.file));
+                         allErrors.push(...contractNamingErrors);
                         overallSuccess = false;
                     }
 
+                    // Duplicate Contract/File Name Check (contracts/**)
                     const duplicateErrors = await lintDuplicateContractNames(projectRoot);
                     if (duplicateErrors.length > 0) {
                          duplicateErrors.forEach(err => err.file = path.join(relativeProjectRoot, err.file));
                          allErrors.push(...duplicateErrors);
+                        overallSuccess = false;
+                    }
+                    
+                    // Wrapper Naming Check (wrappers/ - PascalCase)
+                    const wrapperNamingErrors = await checkWrapperNaming(projectRoot);
+                    if (wrapperNamingErrors.length > 0) {
+                         wrapperNamingErrors.forEach(err => err.file = path.join(relativeProjectRoot, err.file));
+                         allErrors.push(...wrapperNamingErrors);
+                        overallSuccess = false;
+                    }
+
+                    // Script Naming Check (scripts/ - lowerCamelCase)
+                    const scriptNamingErrors = await checkScriptNaming(projectRoot);
+                    if (scriptNamingErrors.length > 0) {
+                         scriptNamingErrors.forEach(err => err.file = path.join(relativeProjectRoot, err.file));
+                         allErrors.push(...scriptNamingErrors);
                         overallSuccess = false;
                     }
 
