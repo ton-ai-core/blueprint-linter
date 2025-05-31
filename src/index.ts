@@ -7,6 +7,7 @@ import fs from 'fs';
 import { glob } from 'glob';
 import { validateProjectStructure } from './checks/initializationCheck';
 import { checkNamingConsistency } from './checks/namingConsistency';
+import { checkContractFilesExist } from './checks/contractFilesCheck';
 import { LinterError, ErrorType } from './types';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -38,6 +39,9 @@ function printHumanReadableErrors(errors: LinterError[]) {
                 } else {
                      message = chalk.red(`Naming Error: ${err.message} (file: ${err.file})`);
                 }
+                break;
+            case ErrorType.MissingContract:
+                message = chalk.red(`Missing Contract: ${err.message} (file: ${err.file})`);
                 break;
             default:
                 message = chalk.red(`- Unknown error type for file ${chalk.yellow(err.file)}: ${err.message}`);
@@ -181,6 +185,14 @@ async function main() {
                     if (scriptNamingErrors.length > 0) {
                          scriptNamingErrors.forEach(err => err.file = path.join(relativeProjectRoot, err.file));
                          allErrors.push(...scriptNamingErrors);
+                        overallSuccess = false;
+                    }
+
+                    // Contract Files Check
+                    const contractFilesErrors = await checkContractFilesExist(projectRoot);
+                    if (contractFilesErrors.length > 0) {
+                         contractFilesErrors.forEach(err => err.file = path.join(relativeProjectRoot, err.file));
+                         allErrors.push(...contractFilesErrors);
                         overallSuccess = false;
                     }
 

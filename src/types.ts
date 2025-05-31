@@ -1,7 +1,8 @@
 export enum ErrorType {
     StructureValidation = 'STRUCTURE_VALIDATION',
     BrokenProject = 'BROKEN_PROJECT',
-    NamingConsistency = 'NAMING_CONSISTENCY'
+    NamingConsistency = 'NAMING_CONSISTENCY',
+    MissingContract = 'MISSING_CONTRACT'
 }
 
 export interface LinterError {
