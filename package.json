@@ -11,7 +11,7 @@
     "start": "node dist/index.js",
     "lint": "node dist/index.js",
     "dev": "ts-node src/index.ts",
-    "prepublishOnly": "npm run build"
+    "release": "npm run build && npm publish --access public"
   },
   "keywords": [
     "ton",
