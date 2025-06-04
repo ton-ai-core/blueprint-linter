@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { LinterError, ErrorType } from '../types';
 
-const MARKER_ITEMS = ['.cursor', '.knowledge', '.vscode', 'package.json'];
+const MARKER_ITEMS = ['.cursor', '.knowledge', '.vscode', 'package.json', '.windsurf', '.cursorrules', '.windsurfrules', 'tsconfig.json'];
 const FORBIDDEN_DIRS = ['scripts', 'script', 'contracts', 'contract', 'tests', 'test', 'wrappers'];
 
 /**
@@ -30,8 +30,8 @@ export function checkRootFolder(startPath: string): LinterError[] {
         if (fs.existsSync(folderPath) && fs.lstatSync(folderPath).isDirectory()) {
             errors.push({
                 type: ErrorType.StructureValidation,
-                file: folderPath,
-                message: `Forbidden directory '${folder}' found in root '${parentDir}'. Use plural names: scripts, contracts, tests, wrappers.`
+                file: startPath,
+                message: `Forbidden directory '${folder}' found in root '${parentDir}'. This prevents confusion and ensures contracts are created in the correct location. Create individual blueprint projects instead and place '${folder}' folders inside them.`
             });
         }
     }
