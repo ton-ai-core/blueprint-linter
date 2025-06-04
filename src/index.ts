@@ -14,6 +14,7 @@ const packageJson = require('../package.json');
 import { lintDuplicateContractNames } from './rules/duplicateContractNames';
 import { checkWrapperNaming } from './rules/wrapperNamingRule';
 import { checkScriptNaming } from './rules/scriptNamingRule';
+import { checkRootFolder } from './checks/rootFolderCheck';
 
 const CHARACTERISTIC_FOLDERS = ['contracts', 'wrappers', 'scripts', 'tests'];
 
@@ -70,6 +71,13 @@ async function main() {
             const allErrors: LinterError[] = [];
             const validProjectRoots: string[] = [];
             const checkedDirs = new Set<string>();
+
+            // Preliminary check: ensure parent folder doesn't contain forbidden directories
+            const rootCheckErrors = checkRootFolder(scanPath);
+            if (rootCheckErrors.length > 0) {
+                allErrors.push(...rootCheckErrors);
+                overallSuccess = false;
+            }
 
             // 1. Find projects
             const packageJsonFiles = await glob('**/package.json', { cwd: scanPath, ignore: ['**/node_modules/**'], absolute: true });

@@ -14,6 +14,9 @@ Checks for common project structure issues and enforces contract file naming con
 *   **Broken Project Detection:** Identifies directories that look like Blueprint projects (contain `contracts`, `wrappers`, etc.) but are missing `package.json`, suggesting the correct initialization command (`npm create ton@latest`).
 *   **Naming Convention Check:** Verifies that contract files (`.tact`, `.fc`, `.func`) within the specified directories (default: `contracts`, `wrappers`, `scripts`, `tests`) use `snake_case` for their filenames.
 *   **JSON Output:** Supports outputting errors in JSON format using the `--json` flag.
+*   **Root Folder Guard:** When executed from a subdirectory, the linter checks the parent
+    folder (if it contains `.cursor`, `.knowledge`, `.vscode`, or `package.json`) and
+    fails if folders like `scripts`, `contracts`, `tests`, or `wrappers` are found there.
 
 ## Installation
 
