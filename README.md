@@ -14,6 +14,11 @@ Checks for common project structure issues and enforces contract file naming con
 *   **Broken Project Detection:** Identifies directories that look like Blueprint projects (contain `contracts`, `wrappers`, etc.) but are missing `package.json`, suggesting the correct initialization command (`npm create ton@latest`).
 *   **Naming Convention Check:** Verifies that contract files (`.tact`, `.fc`, `.func`) within the specified directories (default: `contracts`, `wrappers`, `scripts`, `tests`) use `snake_case` for their filenames.
 *   **JSON Output:** Supports outputting errors in JSON format using the `--json` flag.
+*   **Monorepo Guard:** When executed from a subdirectory, the linter checks the parent
+    folder (if it contains `.cursor`, `.knowledge`, `.vscode`, or `package.json`) and
+    fails if folders like `scripts`, `contracts`, `tests`, or `wrappers` are found there.
+    This prevents accidentally creating contract-related folders in the monorepo root
+    instead of inside individual blueprint projects.
 
 ## Installation
 
@@ -71,4 +76,17 @@ yarn lint:structure
 
 *   `0`: No errors found.
 *   `1`: Linting errors found (structure issues, broken projects, or naming convention violations).
-*   `2`: Unexpected internal error within the linter. 
+*   `2`: Unexpected internal error within the linter.
+
+## Example Error Messages
+
+### Monorepo Guard Error
+
+When contract-related folders are detected in the monorepo root:
+
+```
+Structure INVALID for: /path/to/your/current/project
+    - Forbidden directory 'contracts' found in root '/path/to/contract-knowledge'. This prevents confusion and ensures contracts are created in the correct location. Create individual blueprint projects instead and place 'contracts' folders inside them.
+```
+
+This error helps prevent accidentally creating contract folders in the wrong location when working with monorepos. 
